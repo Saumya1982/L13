@@ -17,6 +17,9 @@ namespace LibaryManagementSystem
         {
             InitializeComponent();
         }
+
+        string classification;
+
         private void clearall()
         {
             txtTitleID.Clear();
@@ -25,58 +28,67 @@ namespace LibaryManagementSystem
             txtPublisher.Clear();
             rbtnBorrow.Checked = false;
             rbtnRefer.Checked = false;
-
         }
 
-        string classification;
+        private string dbpath = "Data Source=DESKTOP-SFMP7H4\\SQLEXPRESS;Initial Catalog=LibMS;Integrated Security=True";
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            string dbpath;
-            dbpath = "Data Source=DESKTOP-SFMP7H4\\SQLEXPRESS;Initial Catalog=LibMS;Integrated Security=True";
-            if (rbtnBorrow.Checked == true)
-            {
+            if (rbtnBorrow.Checked)
                 classification = "Borrow";
-            }
-            if (rbtnRefer.Checked == true)
-            {
+            else if (rbtnRefer.Checked)
                 classification = "Reference";
-            }
-            SqlConnection connect=new SqlConnection(dbpath);
-            connect.Open();
-            SqlCommand add = new SqlCommand("insert into BookInfo values('"+txtTitleID.Text+"','"+txtBookName.Text+"','"+txtAuthor.Text+"','"+txtPublisher.Text+"','"+classification+"')",connect);
-            add.ExecuteNonQuery();
-            connect.Close();
-            MessageBox.Show("Book Added Successfuly.");
-           
+            else
+                classification = "";
 
-            connect.Open();
-            SqlCommand copies = new SqlCommand("insert into BookCopy values('" + txtTitleID.Text + "'," + 0 + ")", connect);
-            copies.ExecuteNonQuery();
-            connect.Close();
-            MessageBox.Show("Book Stock Updated.");
-            clearall();
+            using (SqlConnection connect = new SqlConnection(dbpath))
+            {
+                connect.Open();
+
+                // Insert into BookInfo
+                SqlCommand add = new SqlCommand("INSERT INTO BookInfo VALUES(@TitleID, @BookName, @Author, @Publisher, @Classifi)", connect);
+                add.Parameters.AddWithValue("@TitleID", txtTitleID.Text);
+                add.Parameters.AddWithValue("@BookName", txtBookName.Text);
+                add.Parameters.AddWithValue("@Author", txtAuthor.Text);
+                add.Parameters.AddWithValue("@Publisher", txtPublisher.Text);
+                add.Parameters.AddWithValue("@Classifi", classification);
+                add.ExecuteNonQuery();
+
+                // Insert into BookCopy
+                SqlCommand copies = new SqlCommand("INSERT INTO BookCopy VALUES(@TitleID, 0)", connect);
+                copies.Parameters.AddWithValue("@TitleID", txtTitleID.Text);
+                copies.ExecuteNonQuery();
+
+                MessageBox.Show("Book Added Successfully.");
+                clearall();
+                LoadLastTitleID(); // Refresh txtLTID
+            }
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            string dbpath;
-            dbpath = "Data Source=DESKTOP-SFMP7H4\\SQLEXPRESS;Initial Catalog=LibMS;Integrated Security=True";
-            if (rbtnBorrow.Checked == true)
-            {
+            if (rbtnBorrow.Checked)
                 classification = "Borrow";
-            }
-            if (rbtnRefer.Checked == true)
-            {
+            else if (rbtnRefer.Checked)
                 classification = "Reference";
+            else
+                classification = "";
+
+            using (SqlConnection connect = new SqlConnection(dbpath))
+            {
+                connect.Open();
+                SqlCommand update = new SqlCommand("UPDATE BookInfo SET BookName=@BookName, Author=@Author, Publisher=@Publisher, Classifi=@Classifi WHERE TitleID=@TitleID", connect);
+                update.Parameters.AddWithValue("@BookName", txtBookName.Text);
+                update.Parameters.AddWithValue("@Author", txtAuthor.Text);
+                update.Parameters.AddWithValue("@Publisher", txtPublisher.Text);
+                update.Parameters.AddWithValue("@Classifi", classification);
+                update.Parameters.AddWithValue("@TitleID", txtTitleID.Text);
+                update.ExecuteNonQuery();
+
+                MessageBox.Show("Book Updated Successfully.");
+                clearall();
+                LoadLastTitleID(); // Refresh txtLTID
             }
-            SqlConnection connect = new SqlConnection(dbpath);
-            connect.Open();
-            SqlCommand update = new SqlCommand("Update BookInfo set BookName='" + txtBookName.Text + "',Author='"+txtAuthor.Text+ "',Publisher='"+txtPublisher.Text+ "',Classifi='"+classification+"' where TitleID='" + txtTitleID.Text+"'", connect);
-            update.ExecuteNonQuery();
-            connect.Close() ;
-            MessageBox.Show("Book Updated Successfuly.");
-            clearall();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -88,19 +100,18 @@ namespace LibaryManagementSystem
                 return;
             }
 
-            string dbpath = "Data Source=DESKTOP-SFMP7H4\\SQLEXPRESS;Initial Catalog=LibMS;Integrated Security=True";
             using (SqlConnection connect = new SqlConnection(dbpath))
             {
                 try
                 {
                     connect.Open();
 
-                    // Step 1: Delete from BookCopy first (dependent table)
+                    // Delete from BookCopy
                     SqlCommand deleteCopies = new SqlCommand("DELETE FROM BookCopy WHERE TitleID = @TitleID", connect);
                     deleteCopies.Parameters.AddWithValue("@TitleID", txtTitleID.Text);
                     deleteCopies.ExecuteNonQuery();
 
-                    // Step 2: Delete from BookInfo
+                    // Delete from BookInfo
                     SqlCommand deleteBook = new SqlCommand("DELETE FROM BookInfo WHERE TitleID = @TitleID", connect);
                     deleteBook.Parameters.AddWithValue("@TitleID", txtTitleID.Text);
                     int rowsAffected = deleteBook.ExecuteNonQuery();
@@ -108,12 +119,8 @@ namespace LibaryManagementSystem
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Book removed successfully.");
-                        txtTitleID.Clear();
-                        txtBookName.Clear();
-                        txtAuthor.Clear();
-                        txtPublisher.Clear();
-                        rbtnBorrow.Checked = false;
-                        rbtnRefer.Checked = false;
+                        clearall();
+                        LoadLastTitleID(); // Refresh txtLTID
                     }
                     else
                     {
@@ -125,12 +132,32 @@ namespace LibaryManagementSystem
                     MessageBox.Show("Error: " + ex.Message);
                 }
             }
-
         }
 
         private void frmBook_Load(object sender, EventArgs e)
         {
+            LoadLastTitleID();
+        }
 
+        private void LoadLastTitleID()
+        {
+            using (SqlConnection connect = new SqlConnection(dbpath))
+            {
+                try
+                {
+                    connect.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT TOP 1 TitleID FROM BookInfo ORDER BY TitleID DESC", connect);
+                    var result = cmd.ExecuteScalar();
+                    if (result != null)
+                        txtLTID.Text = result.ToString();
+                    else
+                        txtLTID.Text = "None";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error loading last TitleID: " + ex.Message);
+                }
+            }
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -142,11 +169,9 @@ namespace LibaryManagementSystem
                 return;
             }
 
-            string dbpath = "Data Source=DESKTOP-SFMP7H4\\SQLEXPRESS;Initial Catalog=LibMS;Integrated Security=True";
             using (SqlConnection connect = new SqlConnection(dbpath))
             {
-                string query = "SELECT * FROM BookInfo WHERE TitleID = @TitleID";
-                SqlCommand cmd = new SqlCommand(query, connect);
+                SqlCommand cmd = new SqlCommand("SELECT * FROM BookInfo WHERE TitleID = @TitleID", connect);
                 cmd.Parameters.AddWithValue("@TitleID", txtTitleID.Text.Trim());
 
                 connect.Open();
@@ -158,15 +183,8 @@ namespace LibaryManagementSystem
                     txtPublisher.Text = reader["Publisher"].ToString();
                     string classifi = reader["Classifi"].ToString();
 
-                    if (classifi == "Borrow")
-                        rbtnBorrow.Checked = true;
-                    else if (classifi == "Reference")
-                        rbtnRefer.Checked = true;
-                    else
-                    {
-                        rbtnBorrow.Checked = false;
-                        rbtnRefer.Checked = false;
-                    }
+                    rbtnBorrow.Checked = (classifi == "Borrow");
+                    rbtnRefer.Checked = (classifi == "Reference");
                 }
                 else
                 {

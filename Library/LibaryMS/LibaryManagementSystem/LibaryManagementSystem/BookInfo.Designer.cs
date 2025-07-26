@@ -45,12 +45,16 @@
             this.txtTitleID = new System.Windows.Forms.TextBox();
             this.lblTitleID = new System.Windows.Forms.Label();
             this.lblBookInfo = new System.Windows.Forms.Label();
+            this.lblLTID = new System.Windows.Forms.Label();
+            this.txtLTID = new System.Windows.Forms.TextBox();
             this.grbBookInfo.SuspendLayout();
             this.SuspendLayout();
             // 
             // grbBookInfo
             // 
             this.grbBookInfo.BackColor = System.Drawing.Color.AliceBlue;
+            this.grbBookInfo.Controls.Add(this.txtLTID);
+            this.grbBookInfo.Controls.Add(this.lblLTID);
             this.grbBookInfo.Controls.Add(this.btnDelete);
             this.grbBookInfo.Controls.Add(this.btnSearch);
             this.grbBookInfo.Controls.Add(this.btnEdit);
@@ -121,7 +125,7 @@
             // rbtnRefer
             // 
             this.rbtnRefer.AutoSize = true;
-            this.rbtnRefer.Location = new System.Drawing.Point(258, 316);
+            this.rbtnRefer.Location = new System.Drawing.Point(258, 353);
             this.rbtnRefer.Name = "rbtnRefer";
             this.rbtnRefer.Size = new System.Drawing.Size(131, 29);
             this.rbtnRefer.TabIndex = 13;
@@ -132,7 +136,7 @@
             // rbtnBorrow
             // 
             this.rbtnBorrow.AutoSize = true;
-            this.rbtnBorrow.Location = new System.Drawing.Point(258, 267);
+            this.rbtnBorrow.Location = new System.Drawing.Point(258, 307);
             this.rbtnBorrow.Name = "rbtnBorrow";
             this.rbtnBorrow.Size = new System.Drawing.Size(141, 29);
             this.rbtnBorrow.TabIndex = 12;
@@ -143,7 +147,7 @@
             // lblClasifi
             // 
             this.lblClasifi.AutoSize = true;
-            this.lblClasifi.Location = new System.Drawing.Point(90, 297);
+            this.lblClasifi.Location = new System.Drawing.Point(90, 330);
             this.lblClasifi.Name = "lblClasifi";
             this.lblClasifi.Size = new System.Drawing.Size(148, 25);
             this.lblClasifi.TabIndex = 8;
@@ -151,7 +155,7 @@
             // 
             // txtPublisher
             // 
-            this.txtPublisher.Location = new System.Drawing.Point(258, 205);
+            this.txtPublisher.Location = new System.Drawing.Point(258, 240);
             this.txtPublisher.Name = "txtPublisher";
             this.txtPublisher.Size = new System.Drawing.Size(213, 30);
             this.txtPublisher.TabIndex = 7;
@@ -159,7 +163,7 @@
             // lblPublisher
             // 
             this.lblPublisher.AutoSize = true;
-            this.lblPublisher.Location = new System.Drawing.Point(90, 205);
+            this.lblPublisher.Location = new System.Drawing.Point(92, 245);
             this.lblPublisher.Name = "lblPublisher";
             this.lblPublisher.Size = new System.Drawing.Size(109, 25);
             this.lblPublisher.TabIndex = 6;
@@ -167,7 +171,7 @@
             // 
             // txtAuthor
             // 
-            this.txtAuthor.Location = new System.Drawing.Point(258, 157);
+            this.txtAuthor.Location = new System.Drawing.Point(258, 188);
             this.txtAuthor.Name = "txtAuthor";
             this.txtAuthor.Size = new System.Drawing.Size(213, 30);
             this.txtAuthor.TabIndex = 5;
@@ -175,7 +179,7 @@
             // lblAuthor
             // 
             this.lblAuthor.AutoSize = true;
-            this.lblAuthor.Location = new System.Drawing.Point(92, 157);
+            this.lblAuthor.Location = new System.Drawing.Point(95, 193);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(83, 25);
             this.lblAuthor.TabIndex = 4;
@@ -183,7 +187,7 @@
             // 
             // txtBookName
             // 
-            this.txtBookName.Location = new System.Drawing.Point(258, 105);
+            this.txtBookName.Location = new System.Drawing.Point(258, 131);
             this.txtBookName.Name = "txtBookName";
             this.txtBookName.Size = new System.Drawing.Size(213, 30);
             this.txtBookName.TabIndex = 3;
@@ -191,7 +195,7 @@
             // lblBookName
             // 
             this.lblBookName.AutoSize = true;
-            this.lblBookName.Location = new System.Drawing.Point(92, 105);
+            this.lblBookName.Location = new System.Drawing.Point(95, 134);
             this.lblBookName.Name = "lblBookName";
             this.lblBookName.Size = new System.Drawing.Size(130, 25);
             this.lblBookName.TabIndex = 2;
@@ -199,7 +203,7 @@
             // 
             // txtTitleID
             // 
-            this.txtTitleID.Location = new System.Drawing.Point(258, 53);
+            this.txtTitleID.Location = new System.Drawing.Point(258, 80);
             this.txtTitleID.Name = "txtTitleID";
             this.txtTitleID.Size = new System.Drawing.Size(213, 30);
             this.txtTitleID.TabIndex = 1;
@@ -207,11 +211,11 @@
             // lblTitleID
             // 
             this.lblTitleID.AutoSize = true;
-            this.lblTitleID.Location = new System.Drawing.Point(90, 58);
+            this.lblTitleID.Location = new System.Drawing.Point(95, 80);
             this.lblTitleID.Name = "lblTitleID";
-            this.lblTitleID.Size = new System.Drawing.Size(88, 25);
+            this.lblTitleID.Size = new System.Drawing.Size(130, 25);
             this.lblTitleID.TabIndex = 0;
-            this.lblTitleID.Text = "Title ID:";
+            this.lblTitleID.Text = "New TitleID:";
             // 
             // lblBookInfo
             // 
@@ -223,6 +227,23 @@
             this.lblBookInfo.Size = new System.Drawing.Size(285, 40);
             this.lblBookInfo.TabIndex = 1;
             this.lblBookInfo.Text = "Book Information";
+            // 
+            // lblLTID
+            // 
+            this.lblLTID.AutoSize = true;
+            this.lblLTID.Location = new System.Drawing.Point(95, 37);
+            this.lblLTID.Name = "lblLTID";
+            this.lblLTID.Size = new System.Drawing.Size(129, 25);
+            this.lblLTID.TabIndex = 18;
+            this.lblLTID.Text = "Last TitleID:";
+            // 
+            // txtLTID
+            // 
+            this.txtLTID.Location = new System.Drawing.Point(258, 32);
+            this.txtLTID.Name = "txtLTID";
+            this.txtLTID.ReadOnly = true;
+            this.txtLTID.Size = new System.Drawing.Size(213, 30);
+            this.txtLTID.TabIndex = 19;
             // 
             // frmBook
             // 
@@ -262,6 +283,8 @@
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.TextBox txtLTID;
+        private System.Windows.Forms.Label lblLTID;
     }
 }
 
